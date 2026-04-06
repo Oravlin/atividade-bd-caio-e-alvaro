@@ -36,12 +36,12 @@ create table if not exists tbcategoria(
 ) engine=InnoDB;
 
 /* 6. 
-	A. int pois é um número e não tem tamanho definido
+	A. int pois é um número inteiro e não tem tamanho definido
 	B. varchar porque é um texto, e diferente do char que obriga a preencher todas as caracteres disponiveis.
  
  7. o nome deve ser unique pois não é necessário existir duas categorias de mesmo nome.
  8. seria possível a inserção de duas categorias de mesmo nome no sistema, causando conflitos.
- 9. sem primary key, não seria possível identificar o item na tabela
+ 9. sem primary key, não seria possível identificar o item na tabela e não fazer relacionamentos
 */
 
 -- etapa 3
@@ -53,7 +53,7 @@ alter table tbproduto add constraint FkcCategoria foreign key (FKcategoria) refe
 10) usamos o protocolo de exclusão RESTRICT, porque esse método bloqueia a exclusão de registros que possuem relacionamento
 11) deve-se usar quando é necessário apagar tudo relacionado à tabela pai
 12) quando for necessário a restrição de exclusão ao possuir relacionamento à tabelas filhas
-13) ao usar SET NULL os dados apagados se tornarão NULL, ou seja, será uma substituição
+13) ao usar SET NULL os dados apagados se tornarão NULL, ou seja, será uma substituição de dados
 14) regra no banco se refere a como o banco irá se portar com os dados inseridos nele, regra na aplicação
 refere-se ao comportamento de dados que seram enviados para o banco
  */
@@ -67,3 +67,13 @@ create table if not exists tbpedido(
 )engine=InnoDB;
 alter table tbpedido add constraint FkCliente foreign key (id_cliente_fk) references tbcliente (id_cliente) on delete cascade;
 
+-- exercicios evoluindo o sistema
+create table if not exists tbpedido_item(
+	id_item int primary key,
+	id_pedido int,
+    id_produto int,
+    qtd_pedido int check (qtd_pedido > 0),
+    preco_unitario decimal(8,2)
+)engine=InnoDB;
+alter table tbpedido_item add constraint Fkpedido foreign key (id_pedido) references tbpedido (id_pedido);
+alter table tbpedido_item add constraint Fkproduto foreign key (id_produto) references tbproduto (id_produto);
