@@ -1,3 +1,5 @@
+drop database if exists empresa;
+
 CREATE DATABASE IF NOT EXISTS empresa
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_general_ci;
@@ -106,8 +108,8 @@ insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id
 insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item) values (3, 2, 2, 5, 3);
 insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item) values (2, 4, 5, 67.69, 4);
 
--- inserindo pedido com cliente inexistente
-insert into tbpedido (valor_pedido, id_cliente_fk) values (780.87, 10);
+-- inserindo pedido com cliente inexistente:
+-- insert into tbpedido (valor_pedido, id_cliente_fk) values (780.87, 10);
 -- Explicação: a constraint que faz o relacionamento falha porque não há um cliente que fez esse pedido, e o grau de relacionamento exige que exista um cliente para cada pedido
 
 -- teste de cascade
@@ -122,7 +124,8 @@ select * from tbpedido_item;
 
 -- evolução real
 alter table tbpedido add column (desconto_pedido decimal(5,2) check (desconto_pedido >= 0 and desconto_pedido <= 100));
-insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item, desconto_pedido) values (2, 4, 5, 67.69, 4, 101);
+-- inserindo pedido_item inválido:
+-- insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item, desconto_pedido) values (2, 4, 5, 67.69, 4, 101);
 
 -- etapa mercado
 -- o delete on cascade no pedido item é necessário caso um pedido seja apagado. Porque não há mais necessidade de ter um pedido_item
