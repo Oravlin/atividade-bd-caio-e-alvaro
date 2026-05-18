@@ -1,26 +1,26 @@
 drop database if exists empresa;
 
-CREATE DATABASE IF NOT EXISTS empresa
+create database if not exists empresa
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_general_ci;
   
-USE empresa;
+use empresa;
 
-CREATE TABLE if not exists tbcliente(
-id_cliente INT AUTO_INCREMENT PRIMARY KEY,
-nome_cliente VARCHAR(100) NOT NULL,
-email_cliente VARCHAR(100) UNIQUE,
-ativo_cliente TINYINT NOT NULL DEFAULT 1,
-data_cadastro_cliente DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+create table if not exists tbcliente(
+id_cliente int auto_increment primary key,
+nome_cliente varchar(100) not null,
+email_cliente varchar(100) unique,
+ativo_cliente tinyint not null default 1,
+data_cadastro_cliente timestamp default current_timestamp
+) engine=InnoDB;
 
-CREATE TABLE if not exists tbproduto (
-id_produto INT AUTO_INCREMENT PRIMARY KEY,
-nome_produto VARCHAR(100) NOT NULL,
-preco_produto DECIMAL(10,2) CHECK (preco_produto > 0),
-qtd_estoque_produto INT DEFAULT 1,
-data_cadastro_produto DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+create table if not exists tbproduto (
+id_produto int auto_increment primary key,
+nome_produto varchar(100) not null,
+preco_produto decimal(10,2) check (preco_produto > 0) not null,
+qtd_estoque_produto int default 1 not null,
+data_cadastro_produto timestamp default current_timestamp
+) engine=InnoDB;
 
 /*
 1. Decimal
@@ -64,18 +64,18 @@ refere-se ao comportamento de dados que seram enviados para o banco
 create table if not exists tbpedido(
 	id_pedido int primary key auto_increment,
     data_pedido timestamp default current_timestamp,
-    valor_pedido decimal(8,2) check (valor_pedido > 0),
-    id_cliente_fk int
+    valor_pedido decimal(8,2) check (valor_pedido > 0) not null,
+    id_cliente_fk int not null
 )engine=InnoDB;
 alter table tbpedido add constraint FkCliente foreign key (id_cliente_fk) references tbcliente (id_cliente) on delete cascade;
 
 -- exercicios evoluindo o sistema
 create table if not exists tbpedido_item(
-	id_item int primary key,
-	id_pedido int,
-    id_produto int,
-    qtd_pedido int check (qtd_pedido > 0),
-    preco_unitario decimal(8,2)
+	id_pedido int not null,
+    id_produto int not null,
+    qtd_pedido int check (qtd_pedido > 0) not null,
+    preco_unitario decimal(8,2) not null,
+    primary key(id_pedido, id_produto)
 )engine=InnoDB;
 alter table tbpedido_item add constraint Fkpedido foreign key (id_pedido) references tbpedido (id_pedido) on delete cascade;
 alter table tbpedido_item add constraint Fkproduto foreign key (id_produto) references tbproduto (id_produto) on delete restrict;
@@ -103,10 +103,10 @@ insert into tbpedido (valor_pedido, id_cliente_fk) values (7667, 3);
 insert into tbpedido (valor_pedido, id_cliente_fk) values (3.99, 1);
 insert into tbpedido (valor_pedido, id_cliente_fk) values (780.87, 2);
 
-insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item) values (1, 1, 2, 3.67, 1);
-insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item) values (4, 3, 99, 25.63, 2);
-insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item) values (3, 2, 2, 5, 3);
-insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item) values (2, 4, 5, 67.69, 4);
+insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario) values (1, 1, 2, 3.67);
+insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario) values (4, 3, 99, 25.63);
+insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario) values (3, 2, 2, 5);
+insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario) values (2, 4, 5, 67.69);
 
 -- inserindo pedido com cliente inexistente:
 -- insert into tbpedido (valor_pedido, id_cliente_fk) values (780.87, 10);
@@ -123,7 +123,7 @@ select * from tbpedido_item;
 
 
 -- evolução real
-alter table tbpedido add column (desconto_pedido decimal(5,2) check (desconto_pedido >= 0 and desconto_pedido <= 100));
+alter table tbpedido add column (desconto_pedido decimal(5,2) check (desconto_pedido >= 0 and desconto_pedido <= 100) not null);
 -- inserindo pedido_item inválido:
 -- insert into tbpedido_item (id_pedido, id_produto, qtd_pedido, preco_unitario, id_item, desconto_pedido) values (2, 4, 5, 67.69, 4, 101);
 
